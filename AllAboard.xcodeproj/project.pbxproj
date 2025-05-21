@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		9E15941C2DDCF7B800C28A26 /* OctoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9E15941B2DDCF7B800C28A26 /* OctoKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		9E1593FE2DDCE9D900C28A26 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +33,22 @@
 		9E1594072DDCE9D900C28A26 /* AllAboardUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AllAboardUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		9E15941E2DDCFAF900C28A26 /* Exceptions for "AllAboard" folder in "AllAboard" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 9E1593EE2DDCE9D800C28A26 /* AllAboard */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		9E1593F12DDCE9D800C28A26 /* AllAboard */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				9E15941E2DDCFAF900C28A26 /* Exceptions for "AllAboard" folder in "AllAboard" target */,
+			);
 			path = AllAboard;
 			sourceTree = "<group>";
 		};
@@ -52,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E15941C2DDCF7B800C28A26 /* OctoKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +130,7 @@
 			);
 			name = AllAboard;
 			packageProductDependencies = (
+				9E15941B2DDCF7B800C28A26 /* OctoKit */,
 			);
 			productName = AllAboard;
 			productReference = 9E1593EF2DDCE9D800C28A26 /* AllAboard.app */;
@@ -195,6 +214,9 @@
 			);
 			mainGroup = 9E1593E62DDCE9D800C28A26;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				9E15941A2DDCF7B800C28A26 /* XCRemoteSwiftPackageReference "octokit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9E1593F02DDCE9D800C28A26 /* Products */;
 			projectDirPath = "";
@@ -393,6 +415,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AllAboard/Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -412,10 +436,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 2.4;
 			};
 			name = Debug;
@@ -430,6 +454,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AllAboard/Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -449,10 +475,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 2.4;
 			};
 			name = Release;
@@ -583,6 +609,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9E15941A2DDCF7B800C28A26 /* XCRemoteSwiftPackageReference "octokit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nerdishbynature/octokit.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.14.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9E15941B2DDCF7B800C28A26 /* OctoKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9E15941A2DDCF7B800C28A26 /* XCRemoteSwiftPackageReference "octokit" */;
+			productName = OctoKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9E1593E72DDCE9D800C28A26 /* Project object */;
 }

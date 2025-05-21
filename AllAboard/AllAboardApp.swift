@@ -6,12 +6,24 @@
 //
 
 import SwiftUI
+import UserNotifications
+import OctoKit
 
 @main
 struct AllAboardApp: App {
+    @Environment(\.openSettings) private var openSettings
+    
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        MenuBarExtra("Deploy Train", systemImage: "train.side.front.car") {
+            MenuContentView()
         }
+        
+        Settings {
+            PreferencesView()
+        }
+    }
+    
+    init() {
+        ScheduleService.shared.start()
     }
 }

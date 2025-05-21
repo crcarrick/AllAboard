@@ -24,63 +24,96 @@ struct PreferencesView: View {
                 Text("GitHub")
                     .font(.headline)
                 
-                SecureField("Personal Access Token", text: $vm.githubToken)
+                SecureField("Personal Access Token", text: $vm.ghToken)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .overlay(alignment: .trailing) {
+                        if vm.ghSaved {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                                .padding(.trailing, 8)
+                                .transition(.opacity)
+                        }
+                    }
+                    .animation(.easeInOut(duration: 0.25), value: vm.ghSaved)
 
-                Text("Store a token with `repo` scope.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                HStack {
+                    Text("Store a token with `repo` scope.  Must be SSO enabled.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    Button("Save") {
+                        vm.saveToken()
+                    }
+                    .disabled(vm.ghToken.isEmpty)
+                    .keyboardShortcut(.defaultAction)
+                }
             }
 
             Divider()
 
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Deploy Train Schedule")
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Schedule")
                     .font(.headline)
+                
+                Text("Configure the deploy train schedule.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
 
-                Picker("Day:", selection: $vm.weekday) {
-                    ForEach(Weekday.allCases) { day in
-                        Text(day.displayName).tag(day)
+                HStack(alignment: .center) {
+                    Picker("Day:", selection: $vm.weekday) {
+                        ForEach(Weekday.allCases.filter({ ![.sunday, .saturday].contains($0) })) { day in
+                            Text(day.displayName).tag(day)
+                        }
                     }
+                    .labelsHidden()
+                    .pickerStyle(.segmented)
                 }
-                .labelsHidden()
-                .pickerStyle(PopUpButtonPickerStyle())
-                .frame(width: 200)
 
-                if vm.times.isEmpty {
-                    Text("No times added yet.")
-                        .foregroundColor(.secondary)
-                        .font(.subheadline)
-                        .padding(.vertical, 4)
-                } else {
-                    VStack(spacing: 6) {
-                        ForEach(vm.sortedTimes) { time in
-                            HStack {
-                                Text(time.formatted)
-                                    .font(.system(.body, design: .monospaced))
-                                
-                                Spacer()
-                                
-                                Button(action: { vm.removeTime(time: time) }) {
-                                    Image(systemName: "xmark.circle.fill")
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 6) {
+                        if vm.times.isEmpty {
+                            Label("No times scheduled", systemImage: "clock.badge.exclamationmark")
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        } else {
+                            ForEach(vm.sortedTimes) { time in
+                                HStack {
+                                    Text(time.formatted)
+                                        .font(.system(.body, design: .monospaced))
+                                    
+                                    Spacer()
+                                    
+                                    Button(action: { vm.removeTime(time: time) }) {
+                                        Image(systemName: "xmark.circle.fill")
+                                    }
+                                    .buttonStyle(.borderless)
                                 }
-                                .buttonStyle(BorderlessButtonStyle())
+                                .padding(.horizontal, 6)
+                                .transition(.move(edge: .top).combined(with: .opacity))
                             }
-                            .padding(.horizontal, 6)
                         }
                     }
                 }
-
+                .padding()
+                .background()
+                .frame(maxHeight: 150)
+                
                 HStack {
-                    TextField("HH:mm", text: $vm.timeStr)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    Spacer()
                     
-                    Button(action: { vm.appendTime(time: vm.timeStr) }) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title3)
+                    VStack(alignment: .trailing, spacing: 6) {
+                        TrainTimePickerView(time: $vm.timeVal) {
+                            vm.appendTime()
+                        }
+                        
+                        Label("That time is already scheduled.", systemImage: "exclamationmark.triangle.fill")
+                            .font(.callout)
+                            .foregroundColor(.red)
+                            .opacity(vm.showErr ? 1 : 0)
+                            .animation(.easeInOut, value: vm.showErr)
                     }
-                    .buttonStyle(PlainButtonStyle())
-                    .help("Add deploy time")
                 }
             }
 
@@ -89,4 +122,8 @@ struct PreferencesView: View {
         .padding(24)
         .frame(width: 420, height: 420)
     }
+}
+
+#Preview {
+  PreferencesView()
 }
