@@ -10,59 +10,60 @@ import OctoKit
 class GithubService {
     static let shared = GithubService()
     
-    func checkForReadyPRs(completion: @escaping ([String]) -> Void) {
+    private let repo = "app"
+    private let owner = "klaviyo"
+    private let label = "ready-to-merge"
+    private var cachedUser: User? = nil
+    
+    private var ghClient: Octokit? {
         guard let token = GithubTokenStore.loadToken() else {
-            completion([])
-            return
+            return nil
         }
         
-        let config = TokenConfiguration(token)
-        let octokit = Octokit(config)
+        return Octokit(TokenConfiguration(token))
+    }
+    
+    func getReadyPRs() async -> [String] {
+        guard let client = ghClient else {
+            return []
+        }
         
-        octokit.me() { response in
-            switch response {
-            case .success(let user):
-                let id = user.id
-                
-                self.fetchAllPRs { prs in
-                    let filtered = prs.filter { $0.user?.id == id && $0.labels?.contains(where: { $0.name == "ready-to-merge" }) ?? false }
-                    
-                    if filtered.isEmpty {
-                        completion([])
-                    } else {
-                        completion(filtered.map({ $0.title ?? "" }))
-                    }
-                }
-            case .failure(let error):
-                print("Error: \(error)")
-                completion([])
-            }
+
+        if let user = await me(client: client) {
+            let prs = await fetchPRs(client: client)
+            
+            return prs.filter({$0.user?.id == user.id && $0.labels?.contains(where: { $0.name == label }) == true})
+                .compactMap(\.title)
+        }
+        
+        return []
+    }
+    
+    private func me(client: Octokit) async -> User? {
+        if let cachedUser {
+            return cachedUser
+        }
+        
+        do {
+            let user = try await client.me()
+            cachedUser = user
+            return user
+        } catch {
+            print("Failed to fetch Github user: \(error)")
+            return nil
         }
     }
     
-    private func fetchAllPRs(page: Int = 1, collected: [PullRequest] = [], completion: @escaping ([PullRequest]) -> Void) {
-        guard let token = GithubTokenStore.loadToken() else {
-            completion([])
-            return
-        }
-        
-        let config = TokenConfiguration(token)
-        let octokit = Octokit(config)
-        
-        octokit.pullRequests(owner: "klaviyo", repository: "app", page: String(page), perPage: "100") { response in
-            switch response {
-            case .success(let prs):
-                let allPRs = collected + prs
-                
-                if prs.count == 100 {
-                    self.fetchAllPRs(page: page + 1, collected: allPRs, completion: completion)
-                } else {
-                    completion(allPRs)
-                }
-            case .failure(let error):
-                print("Pagination failed: \(error)")
-                completion(collected)
-            }
+    private func fetchPRs(client: Octokit, page: Int = 1, collected: [PullRequest] = []) async -> [PullRequest] {
+        do {
+            let prs = try await client.pullRequests(owner: owner, repository: repo, page: String(page), perPage: "100")
+            
+        return prs.count >= 100
+            ? await self.fetchPRs(client: client, page: page + 1, collected: collected + prs)
+            : collected + prs
+        } catch {
+            print("Github PR fetch failed: \(error)")
+            return collected
         }
     }
 }

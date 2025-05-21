@@ -10,18 +10,27 @@ import Foundation
 class ScheduleService {
     static let shared = ScheduleService()
     
-    private var timer: Timer?
+    private var timer: DispatchSourceTimer?
     private var triggered: Set<DateComponents> = []
     private var lastCleared: Int?
     
     func start() {
-        timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
-            self.checkSchedule()
+        timer = DispatchSource.makeTimerSource(queue: DispatchQueue(label: "com.allaboard.scheduler", qos: .background))
+        
+        timer?.schedule(deadline: .now(), repeating: .seconds(60), leeway: .seconds(5))
+        timer?.setEventHandler { [weak self] in
+            guard let self else { return }
+            Task {
+                await self.checkSchedule()
+            }
         }
+        
+        timer?.resume()
     }
     
-    private func checkSchedule() {
+    private func checkSchedule() async {
         let now = Date()
+        let cal = Calendar.current
         let today = Calendar.current.component(.day, from: now)
         
         if lastCleared != today {
@@ -30,21 +39,20 @@ class ScheduleService {
         }
         
         for time in todayTimes() {
-            guard let scheduledDate = Calendar.current.date(from: time),
-                  let warningTime = Calendar.current.date(byAdding: .minute, value: -10, to: scheduledDate) else { continue }
+            guard let hour = time.hour,
+                  let minute = time.minute,
+                  let scheduledDate = cal.date(bySettingHour: hour, minute: minute, second: 0, of: now),
+                  let warningTime = cal.date(byAdding: .minute, value: -10, to: scheduledDate)
+            else { continue }
             
-            let delta = now.timeIntervalSince(warningTime)
+            let rounded = cal.dateComponents([.year, .month, .day, .hour, .minute], from: warningTime)
             
-            if delta >= 0 && delta < 120 {
-                let rounded = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: warningTime)
+            if now >= warningTime && now < scheduledDate && !triggered.contains(rounded) {
+                triggered.insert(rounded)
                 
-                if !triggered.contains(rounded) {
-                    triggered.insert(rounded)
-                    GithubService.shared.checkForReadyPRs { prs in
-                        if !prs.isEmpty {
-                            NotificationService.shared.sendNotification(for: prs)
-                        }
-                    }
+                let readyPRs = await GithubService.shared.getReadyPRs()
+                if !readyPRs.isEmpty {
+                    NotificationService.shared.sendNotification(for: readyPRs)
                 }
             }
         }

@@ -26,4 +26,21 @@ class NotificationService {
             }
         }
     }
+    
+    func sendNoneNotification() {
+        let center = UNUserNotificationCenter.current()
+        
+        center.requestAuthorization(options: [.alert, .sound]) { granted, _ in
+            if granted {
+                let content = UNMutableNotificationContent()
+                content.title = "🚀 All clear!"
+                content.body  = "You have no PRs ready to merge."
+                content.sound = .default
+                
+                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+                
+                center.add(request)
+            }
+        }
+    }
 }
