@@ -13,7 +13,6 @@ class GithubService {
     private let repo = "app"
     private let owner = "klaviyo"
     private let label = "ready-to-merge"
-    private var cachedUser: User? = nil
     
     private var ghClient: Octokit? {
         guard let token = GithubTokenStore.loadToken() else {
@@ -39,15 +38,13 @@ class GithubService {
         return []
     }
     
-    private func me(client: Octokit) async -> User? {
-        if let cachedUser {
-            return cachedUser
-        }
-        
+    func me(client: Octokit? = nil) async -> User? {
         do {
-            let user = try await client.me()
-            cachedUser = user
-            return user
+            if let client {
+                return try await client.me()
+            }
+            
+            return try await ghClient?.me()
         } catch {
             print("Failed to fetch Github user: \(error)")
             return nil
@@ -58,9 +55,9 @@ class GithubService {
         do {
             let prs = try await client.pullRequests(owner: owner, repository: repo, page: String(page), perPage: "100")
             
-        return prs.count >= 100
-            ? await self.fetchPRs(client: client, page: page + 1, collected: collected + prs)
-            : collected + prs
+            return prs.count >= 100
+                ? await self.fetchPRs(client: client, page: page + 1, collected: collected + prs)
+                : collected + prs
         } catch {
             print("Github PR fetch failed: \(error)")
             return collected

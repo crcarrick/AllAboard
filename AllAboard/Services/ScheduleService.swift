@@ -52,7 +52,7 @@ class ScheduleService {
                 
                 let readyPRs = await GithubService.shared.getReadyPRs()
                 if !readyPRs.isEmpty {
-                    NotificationService.shared.sendNotification(for: readyPRs)
+                    await NotificationService.shared.sendNotification(for: readyPRs)
                 }
             }
         }

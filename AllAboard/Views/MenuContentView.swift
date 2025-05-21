@@ -14,13 +14,11 @@ struct MenuContentView: View {
         VStack {
             Button("Check PRs Now") {
                 Task {
-                    print("Running Task")
                     let prs = await GithubService.shared.getReadyPRs()
                     if !prs.isEmpty {
-                        NotificationService.shared.sendNotification(for: prs)
+                        await NotificationService.shared.sendNotification(for: prs)
                     } else {
-                        print("None found!")
-                        NotificationService.shared.sendNoneNotification()
+                        await NotificationService.shared.sendNotification()
                     }
                 }
             }

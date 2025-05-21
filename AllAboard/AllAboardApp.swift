@@ -5,9 +5,9 @@
 //  Created by Chris Carrick on 5/20/25.
 //
 
+import AppKit
 import SwiftUI
 import UserNotifications
-import OctoKit
 
 @main
 struct AllAboardApp: App {
@@ -25,5 +25,6 @@ struct AllAboardApp: App {
     
     init() {
         ScheduleService.shared.start()
+        NotificationDelegate.shared.register()
     }
 }
