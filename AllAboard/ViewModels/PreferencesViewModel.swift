@@ -52,6 +52,10 @@ class PreferencesViewModel: ObservableObject {
         }
     }
     
+    func resetSchedule() {
+        store.reset()
+    }
+    
     func saveToken() {
         GithubTokenStore.saveToken(ghToken)
         

@@ -11,6 +11,8 @@ struct PreferencesView: View {
     @StateObject private var vm: PreferencesViewModel
     @StateObject private var store: TrainScheduleStore
     
+    @State private var showResetConfirmation: Bool = false
+    
     init() {
         let store = TrainScheduleStore()
         
@@ -54,8 +56,33 @@ struct PreferencesView: View {
             Divider()
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("Schedule")
-                    .font(.headline)
+                HStack {
+                    Text("Schedule")
+                        .font(.headline)
+                    
+                    if !store.isDefaultSchedule() {
+                        Spacer()
+                        
+                        Button("Reset") {
+                            showResetConfirmation = true
+                        }
+                        .font(.callout)
+                        .buttonStyle(.link)
+                        .foregroundColor(.red)
+                        .help("Restore the original train schedule")
+                        .confirmationDialog(
+                            "Reset schedule?",
+                            isPresented: $showResetConfirmation,
+                            titleVisibility: .visible,
+                        ) {
+                            Button("Reset", role: .destructive) {
+                                vm.resetSchedule()
+                            }
+                        } message: {
+                            Text("This will erase your current deploy train times and restore the default schedule.")
+                        }
+                    }
+                }
                 
                 Text("Configure the deploy train schedule.")
                     .font(.caption)

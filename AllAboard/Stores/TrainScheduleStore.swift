@@ -14,6 +14,31 @@ class TrainScheduleStore: ObservableObject {
     
     private let storageKey = "trainSchedule"
     
+    private static let defaultSchedule: TrainSchedule = [
+        .monday: [
+            TrainTime(hour: 10, minute: 0),
+            TrainTime(hour: 13, minute: 0),
+            TrainTime(hour: 16, minute: 0),
+        ],
+        .tuesday: [
+            TrainTime(hour: 10, minute: 0),
+            TrainTime(hour: 16, minute: 0),
+        ],
+        .wednesday: [
+            TrainTime(hour: 10, minute: 0),
+            TrainTime(hour: 13, minute: 0),
+            TrainTime(hour: 16, minute: 0),
+        ],
+        .thursday: [
+            TrainTime(hour: 10, minute: 0),
+            TrainTime(hour: 16, minute: 0),
+        ],
+        .friday: [
+            TrainTime(hour: 10, minute: 0),
+            TrainTime(hour: 13, minute: 0),
+        ],
+    ]
+    
     init() {
         load()
     }
@@ -28,6 +53,15 @@ class TrainScheduleStore: ObservableObject {
         save()
     }
     
+    func reset() {
+        self.schedule = TrainScheduleStore.defaultSchedule
+        save()
+    }
+    
+    func isDefaultSchedule() -> Bool {
+        return schedule == TrainScheduleStore.defaultSchedule
+    }
+    
     private func save() {
         if let data = try? JSONEncoder().encode(schedule) {
             UserDefaults.standard.set(data, forKey: storageKey)
@@ -35,9 +69,11 @@ class TrainScheduleStore: ObservableObject {
     }
     
     private func load() {
-        guard let data = UserDefaults.standard.data(forKey: storageKey),
-              let decoded = try? JSONDecoder().decode(TrainSchedule.self, from: data) else { return }
-        
-        schedule = decoded
+        if let data = UserDefaults.standard.data(forKey: storageKey),
+           let decoded = try? JSONDecoder().decode(TrainSchedule.self, from: data) {
+            self.schedule = decoded
+        } else {
+            reset()
+        }
     }
 }
