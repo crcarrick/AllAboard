@@ -1,0 +1,67 @@
+name: Build and Notarize macOS App
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: brew install create-dmg
+
+      - name: Set up certificate
+        run: |
+          echo "$APPLE_DEV_ID_P12_BASE64" | base64 --decode > dev_id.p12
+          security create-keychain -p "" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security import dev_id.p12 -k build.keychain -P "$APPLE_DEV_ID_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+        env:
+          APPLE_DEV_ID_P12_BASE64: ${{ secrets.APPLE_DEV_ID_P12_BASE64 }}
+          APPLE_DEV_ID_PASSWORD: ${{ secrets.APPLE_DEV_ID_PASSWORD }}
+
+      - name: Build .app bundle
+        run: |
+          xcodebuild -scheme AllAboard -configuration Release -archivePath AllAboard.xcarchive archive
+          xcodebuild -exportArchive -archivePath AllAboard.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath output
+
+      - name: Create DMG
+        run: |
+          create-dmg \
+            --volname "AllAboard Installer" \
+            --window-pos 200 120 \
+            --window-size 500 300 \
+            --icon-size 100 \
+            --icon "AllAboard.app" 125 150 \
+            --app-drop-link 375 150 \
+            AllAboard.dmg \
+            output
+
+      - name: Notarize DMG
+        run: |
+          xcrun notarytool submit AllAboard.dmg \
+            --apple-id "$APPLE_ID" \
+            --password "$APP_SPECIFIC_PASSWORD" \
+            --team-id "$TEAM_ID" \
+            --wait
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APP_SPECIFIC_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
+          TEAM_ID: ${{ secrets.TEAM_ID }}
+
+      - name: Staple DMG
+        run: xcrun stapler staple AllAboard.dmg
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: AllAboard.dmg
