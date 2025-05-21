@@ -1,5 +1,5 @@
 //
-//  TrainTimePickerVIew.swift
+//  TrainTimePickerView.swift
 //  AllAboard
 //
 //  Created by Chris Carrick on 5/20/25.
@@ -56,14 +56,14 @@ struct TrainTimePickerView: View {
                 time.hour = time.hour < 12
                     ? (val == 12 ? 0 : val)
                     : (val == 12 ? 12 : val + 12)
-            },
+            }
         )
     }
     
     private var minute: Binding<Int> {
         Binding(
             get: { time.minute },
-            set: { time.minute = $0 },
+            set: { time.minute = $0 }
         )
     }
     
@@ -76,7 +76,7 @@ struct TrainTimePickerView: View {
                 time.hour = val
                     ? (hour12 == 0 ? 0 : hour12)
                     : (hour12 == 0 ? 12 : hour12 + 12)
-            },
+            }
         )
     }
 }

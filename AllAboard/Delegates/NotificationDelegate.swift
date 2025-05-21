@@ -19,7 +19,7 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         let action = UNNotificationAction(
             identifier: "OPEN_GITHUB",
             title: "View PRs",
-            options: [.foreground],
+            options: [.foreground]
         )
         
         let category = UNNotificationCategory(

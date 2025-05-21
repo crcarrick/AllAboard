@@ -75,7 +75,7 @@ struct PreferencesView: View {
                         .confirmationDialog(
                             "Reset schedule?",
                             isPresented: $showResetConfirmation,
-                            titleVisibility: .visible,
+                            titleVisibility: .visible
                         ) {
                             Button("Reset", role: .destructive) {
                                 vm.resetSchedule()
