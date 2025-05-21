@@ -5,6 +5,7 @@
 //  Created by Chris Carrick on 5/20/25.
 //
 
+import ServiceManagement
 import SwiftUI
 
 class PreferencesViewModel: ObservableObject {
@@ -62,6 +63,18 @@ class PreferencesViewModel: ObservableObject {
         ghSaved = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.ghSaved = false
+        }
+    }
+    
+    func toggleLaunchAtLogin(_ enabled: Bool) {
+        do {
+            if enabled {
+                try SMAppService.mainApp.register()
+            } else {
+                try SMAppService.mainApp.unregister()
+            }
+        } catch {
+            print("Failed to update login item status: \(error)")
         }
     }
 }

@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct PreferencesView: View {
+    @AppStorage("launchAtLogin") private var launchAtLogin: Bool = false
+    
     @StateObject private var vm: PreferencesViewModel
     @StateObject private var store: TrainScheduleStore
     
@@ -143,11 +145,14 @@ struct PreferencesView: View {
                     }
                 }
             }
-
-            Spacer()
+            
+            Toggle("Launch at login", isOn: $launchAtLogin)
+                .onChange(of: launchAtLogin) { _, val in
+                    vm.toggleLaunchAtLogin(val)
+                }
         }
         .padding(24)
-        .frame(width: 420, height: 420)
+        .frame(width: 420, height: 440)
     }
 }
 
