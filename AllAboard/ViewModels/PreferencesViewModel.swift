@@ -74,7 +74,7 @@ class PreferencesViewModel: ObservableObject {
                 try SMAppService.mainApp.unregister()
             }
         } catch {
-            print("Failed to update login item status: \(error)")
+            Log.settings.warning("Failed to update login item status: \(error)")
         }
     }
 }

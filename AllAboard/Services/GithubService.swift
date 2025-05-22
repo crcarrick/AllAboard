@@ -31,8 +31,14 @@ class GithubService {
         if let user = await me(client: client) {
             let prs = await fetchPRs(client: client)
             
-            return prs.filter({$0.user?.id == user.id && $0.labels?.contains(where: { $0.name == label }) == true})
+            Log.requests.debug("Found \(prs.count) PRs")
+            
+            let filtered = prs.filter({$0.user?.id == user.id && $0.labels?.contains(where: { $0.name == label }) == true})
                 .compactMap(\.title)
+            
+            Log.requests.debug("Found \(filtered.count) ready PRs")
+            
+            return filtered
         }
         
         return []
@@ -46,7 +52,7 @@ class GithubService {
             
             return try await ghClient?.me()
         } catch {
-            print("Failed to fetch Github user: \(error)")
+            Log.requests.warning("Github me request failed: \(error)")
             return nil
         }
     }
@@ -59,7 +65,7 @@ class GithubService {
                 ? await self.fetchPRs(client: client, page: page + 1, collected: collected + prs)
                 : collected + prs
         } catch {
-            print("Github PR fetch failed: \(error)")
+            Log.requests.warning("Github PR fetch failed: \(error)")
             return collected
         }
     }

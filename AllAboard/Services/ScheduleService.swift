@@ -5,6 +5,7 @@
 //  Created by Chris Carrick on 5/20/25.
 //
 
+import AppKit
 import Foundation
 
 class ScheduleService {
@@ -21,11 +22,26 @@ class ScheduleService {
         timer?.setEventHandler { [weak self] in
             guard let self else { return }
             Task {
+                Log.schedule.debug("Checking schedule on timer")
                 await self.checkSchedule()
             }
         }
         
         timer?.resume()
+        
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self,
+            selector: #selector(handleWake),
+            name: NSWorkspace.didWakeNotification,
+            object: nil
+        )
+    }
+    
+    @objc private func handleWake() {
+        Task {
+            Log.schedule.debug("Checking schedule after wakeup")
+            await checkSchedule()
+        }
     }
     
     private func checkSchedule() async {
@@ -48,6 +64,8 @@ class ScheduleService {
             let rounded = cal.dateComponents([.year, .month, .day, .hour, .minute], from: warningTime)
             
             if now >= warningTime && now < scheduledDate && !triggered.contains(rounded) {
+                Log.schedule.debug("Within 10 minutes of scheduled time for \(scheduledDate)")
+                
                 triggered.insert(rounded)
                 
                 let readyPRs = await GithubService.shared.getReadyPRs()

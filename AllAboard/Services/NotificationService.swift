@@ -25,12 +25,14 @@ class NotificationService {
                 content.userInfo = ["ghUser": ghUser?.login ?? ""]
                 content.categoryIdentifier = "READY_PRS"
 
+                Log.notifier.debug("Sending notification for \(prs.count) PR(s)")
+                
                 try await center.add(
                     UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
                 )
             }
         } catch {
-            print("Error sending notification: \(error)")
+            Log.notifier.info("Error sending notification: \(error)")
             return
         }
     }
@@ -47,12 +49,14 @@ class NotificationService {
                 content.body  = "You have no PRs ready to merge."
                 content.sound = .default
 
+                Log.notifier.debug("Sending notification for no PRs")
+                
                 try await center.add(
                     UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
                 )
             }
         } catch {
-            print("Error sending notification: \(error)")
+            Log.notifier.warning("Error sending notification: \(error)")
             return
         }
     }
