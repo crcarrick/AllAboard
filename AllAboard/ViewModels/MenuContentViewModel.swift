@@ -6,15 +6,22 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 @MainActor
 protocol MenuContentViewModelProtocol: ObservableObject {
+    var notificationStatus: UNAuthorizationStatus { get set }
+    
+    func checkNotificationStatus()
     func checkPRsNow()
     func viewSettings()
+    func viewNotifications()
     func quit()
 }
 
 class MenuContentViewModel: ObservableObject, MenuContentViewModelProtocol {
+    @Published var notificationStatus: UNAuthorizationStatus = .notDetermined
+    
     private let openSettings: OpenSettingsAction
     
     init(openSettings: OpenSettingsAction) {
@@ -28,6 +35,14 @@ class MenuContentViewModel: ObservableObject, MenuContentViewModelProtocol {
                 await NotificationService.shared.sendNotification(for: prs)
             } else {
                 await NotificationService.shared.sendNotification()
+            }
+        }
+    }
+    
+    func checkNotificationStatus() {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            DispatchQueue.main.async {
+                self.notificationStatus = settings.authorizationStatus
             }
         }
     }
@@ -47,6 +62,12 @@ class MenuContentViewModel: ObservableObject, MenuContentViewModelProtocol {
         }
     }
     
+    func viewNotifications() {
+        if let url = URL(string: "x-apple.systempreferences:com.apple.preference.notifications") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+    
     func quit() {
         NSApplication.shared.terminate(nil)
     }
@@ -54,12 +75,22 @@ class MenuContentViewModel: ObservableObject, MenuContentViewModelProtocol {
 
 @MainActor
 final class MockMenuContentViewModel: MenuContentViewModelProtocol {
+    var notificationStatus: UNAuthorizationStatus = .notDetermined
+    
     func checkPRsNow() {
         print("Mock checkPRsNow")
     }
     
+    func checkNotificationStatus() {
+        print("Mock checkNotificationStatus")
+    }
+    
     func viewSettings() {
         print("Mock viewSettings")
+    }
+    
+    func viewNotifications() {
+        print("Mock viewNotifications")
     }
     
     func quit() {

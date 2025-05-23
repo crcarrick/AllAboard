@@ -51,11 +51,11 @@ struct LogCategory {
         case .debug:
             logger.debug("\(logMessage, privacy: .public)")
         case .error:
-            logger.critical("\(message, privacy: .public)")
+            logger.critical("\(logMessage, privacy: .public)")
         case .notice:
-            logger.notice("\(message, privacy: .public)")
+            logger.notice("\(logMessage, privacy: .public)")
         case .warning:
-            logger.warning("\(message, privacy: .public)")
+            logger.warning("\(logMessage, privacy: .public)")
         }
     }
     

@@ -17,13 +17,13 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         center.delegate = NotificationDelegate.shared
         
         let action = UNNotificationAction(
-            identifier: "OPEN_GITHUB",
-            title: "View PRs",
+            identifier: "OPEN_SLACK",
+            title: "View in Slack",
             options: [.foreground]
         )
         
         let category = UNNotificationCategory(
-            identifier: "READY_PRS",
+            identifier: "DEPLOY_NOTIFICATIONS",
             actions: [action],
             intentIdentifiers: [],
             options: []
@@ -37,20 +37,10 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
         defer { completionHandler() }
         
-        guard response.actionIdentifier == "OPEN_GITHUB" else { return }
+        guard response.actionIdentifier == "OPEN_SLACK" else { return }
         
-        let ghUser = response.notification.request.content.userInfo["ghUser"] as? String
-        let authorQuery = ghUser.map { "author:\($0)" } ?? ""
-        
-        var components = URLComponents()
-        components.host = "github.com"
-        components.path = "/klaviyo/app/pulls"
-        components.scheme = "https"
-        components.queryItems = [
-            URLQueryItem(name: "q", value: "is:open label:ready-to-merge \(authorQuery)")
-        ]
-        
-        if let url = components.url {
+        if let url = URL(string: "https://klaviyo.enterprise.slack.com/archives/C07MBNK8V") {
+            Log.notifier.debug("Opening Slack URL: \(url)")
             NSWorkspace.shared.open(url)
         }
     }

@@ -57,7 +57,9 @@ class GithubService {
         }
     }
     
-    private func fetchPRs(client: Octokit, page: Int = 1, collected: [PullRequest] = []) async -> [PullRequest] {
+    private func fetchPRs(client: Octokit,
+                          page: Int = 1,
+                          collected: [PullRequest] = []) async -> [PullRequest] {
         do {
             let prs = try await client.pullRequests(owner: owner, repository: repo, page: String(page), perPage: "100")
             

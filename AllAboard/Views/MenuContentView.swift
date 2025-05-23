@@ -28,9 +28,17 @@ private struct MenuContentViewBodyView<VM: MenuContentViewModelProtocol>: View {
             Button("Settings", action: vm.viewSettings)
             .keyboardShortcut(",")
             
+            if vm.notificationStatus != .authorized {
+                Button("Notifications", action: vm.viewNotifications)
+                    .keyboardShortcut(".")
+            }
+            
+            Divider()
+            
             Button("Quit", action: vm.quit)
             .keyboardShortcut("q")
         }
+        .onAppear(perform: vm.checkNotificationStatus)
     }
 }
 
