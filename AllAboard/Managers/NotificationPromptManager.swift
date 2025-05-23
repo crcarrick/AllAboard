@@ -30,8 +30,8 @@ final class NotificationPromptManager {
         let hostingController = NSHostingController(rootView: view)
         let win = NSWindow(contentViewController: hostingController)
         
-        win.title = "Notifications"
-        win.setContentSize(NSSize(width: 360, height: 180))
+        win.title = "All Aboard"
+        win.setContentSize(NSSize(width: 360, height: 240))
         win.styleMask = [.titled, .closable]
         win.isReleasedWhenClosed = false
         win.center()

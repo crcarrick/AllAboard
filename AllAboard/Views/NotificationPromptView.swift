@@ -16,16 +16,15 @@ struct NotificationPromptView: View {
         VStack(spacing: 12) {
             Image(nsImage: NSApp.applicationIconImage)
                 .resizable()
-                .frame(width: 64, height: 64)
                 .shadow(radius: 4)
+                .frame(width: 64, height: 64)
             
             Text("Allow notifications?")
-                .font(.title2)
                 .bold()
+                .font(.title2)
             
             Text("All Aboard needs permission to send notifications to remind you to show your ticket.")
                 .multilineTextAlignment(.center)
-                .lineLimit(nil)
             
             HStack {
                 Button("Accept", action: { action(true) })
@@ -34,7 +33,7 @@ struct NotificationPromptView: View {
             }
         }
         .padding(24)
-        .frame(width: 360)
+        .frame(width: 360, height: 240)
     }
 }
 
