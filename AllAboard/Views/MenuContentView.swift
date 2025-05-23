@@ -7,7 +7,15 @@
 
 import SwiftUI
 
-struct MenuContentView<VM: MenuContentViewModelProtocol>: View {
+struct MenuContentView: View {
+    @Environment(\.openSettings) private var openSettings
+    
+    var body: some View {
+        MenuContentViewBodyView(vm: MenuContentViewModel(openSettings: openSettings))
+    }
+}
+
+private struct MenuContentViewBodyView<VM: MenuContentViewModelProtocol>: View {
     @ObservedObject var vm: VM
     
     var body: some View {
@@ -26,14 +34,8 @@ struct MenuContentView<VM: MenuContentViewModelProtocol>: View {
     }
 }
 
-extension MenuContentView where VM == MenuContentViewModel {
-    init() {
-        self.init(vm: MenuContentViewModel())
-    }
-}
-
 #Preview {
     // TODO: Doesn't look at all like the real menu bar
-    MenuContentView(vm: MockMenuContentViewModel())
+    MenuContentViewBodyView(vm: MockMenuContentViewModel())
         .padding()
 }

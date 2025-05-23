@@ -8,6 +8,7 @@
 import ServiceManagement
 import SwiftUI
 
+@MainActor
 protocol PreferencesViewModelProtocol: ObservableObject {
     var weekday: Weekday { get set }
     var timeVal: TrainTime { get set }
@@ -26,6 +27,7 @@ protocol PreferencesViewModelProtocol: ObservableObject {
     func toggleLaunchAtLogin(_ enabled: Bool)
 }
 
+@MainActor
 class PreferencesViewModel: ObservableObject, PreferencesViewModelProtocol {
     @ObservedObject var store: TrainScheduleStore = TrainScheduleStore()
     
@@ -100,6 +102,7 @@ class PreferencesViewModel: ObservableObject, PreferencesViewModelProtocol {
     }
 }
 
+@MainActor
 final class MockPreferencesViewModel: PreferencesViewModelProtocol {
     var weekday: Weekday = .monday
     var timeVal: TrainTime = TrainTime(hour: 0, minute: 0)

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 protocol MenuContentViewModelProtocol: ObservableObject {
     func checkPRsNow()
     func viewSettings()
@@ -14,7 +15,11 @@ protocol MenuContentViewModelProtocol: ObservableObject {
 }
 
 class MenuContentViewModel: ObservableObject, MenuContentViewModelProtocol {
-    @Environment(\.openSettings) private var openSettings
+    private let openSettings: OpenSettingsAction
+    
+    init(openSettings: OpenSettingsAction) {
+        self.openSettings = openSettings
+    }
     
     func checkPRsNow() {
         Task {
@@ -47,6 +52,7 @@ class MenuContentViewModel: ObservableObject, MenuContentViewModelProtocol {
     }
 }
 
+@MainActor
 final class MockMenuContentViewModel: MenuContentViewModelProtocol {
     func checkPRsNow() {
         print("Mock checkPRsNow")
