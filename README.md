@@ -41,15 +41,13 @@ To check for your open PRs, All Aboard needs a GitHub Personal Access Token (PAT
 
 ### 4. Authorize the Token with SSO
 
-In order to be able to see `app` PRs in the Klaviyo organization, you need **Configure SSO** after creation.
+In order to be able to see PRs in our organization, you need **Configure SSO** after creation.
 
 1. After generating the token, visit:
    [https://github.com/settings/tokens](https://github.com/settings/tokens)
 2. You'll see a button next to your token like:
    **“Configure SSO”**
 3. Click it and authenticate using Okta
-
-![SSO authorization](./Screenshots/configure-sso.png)
 
 ---
 
