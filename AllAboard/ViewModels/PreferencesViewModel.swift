@@ -8,8 +8,26 @@
 import ServiceManagement
 import SwiftUI
 
-class PreferencesViewModel: ObservableObject {
-    @ObservedObject var store: TrainScheduleStore
+protocol PreferencesViewModelProtocol: ObservableObject {
+    var weekday: Weekday { get set }
+    var timeVal: TrainTime { get set }
+    var ghToken: String { get set }
+    var ghSaved: Bool { get set }
+    var showErr: Bool { get set }
+    
+    var times: [TrainTime] { get }
+    var sortedTimes: [TrainTime] { get }
+    
+    func appendTime()
+    func isDefaultSchedule() -> Bool
+    func removeTime(time: TrainTime)
+    func resetSchedule()
+    func saveToken()
+    func toggleLaunchAtLogin(_ enabled: Bool)
+}
+
+class PreferencesViewModel: ObservableObject, PreferencesViewModelProtocol {
+    @ObservedObject var store: TrainScheduleStore = TrainScheduleStore()
     
     @Published var weekday: Weekday = .monday
     @Published var timeVal: TrainTime = TrainTime(hour: 0, minute: 0)
@@ -17,8 +35,7 @@ class PreferencesViewModel: ObservableObject {
     @Published var ghSaved: Bool = false
     @Published var showErr: Bool = false
     
-    init(store: TrainScheduleStore) {
-        self.store = store
+    init() {
         self.ghToken = GithubTokenStore.loadToken() ?? ""
     }
     
@@ -45,6 +62,10 @@ class PreferencesViewModel: ObservableObject {
             timeVal = TrainTime(hour: timeVal.hour, minute: timeVal.minute)
             showErr = false
         }
+    }
+    
+    func isDefaultSchedule() -> Bool {
+        store.isDefaultSchedule()
     }
     
     func removeTime(time: TrainTime) {
@@ -76,5 +97,51 @@ class PreferencesViewModel: ObservableObject {
         } catch {
             Log.settings.warning("Failed to update login item status: \(error)")
         }
+    }
+}
+
+final class MockPreferencesViewModel: PreferencesViewModelProtocol {
+    var weekday: Weekday = .monday
+    var timeVal: TrainTime = TrainTime(hour: 0, minute: 0)
+    var ghToken: String = ""
+    var ghSaved: Bool = false
+    var showErr: Bool = false
+    
+    var times: [TrainTime] {
+        return [
+            TrainTime(hour: 10, minute: 0),
+            TrainTime(hour: 11, minute: 0),
+        ]
+    }
+    
+    var sortedTimes: [TrainTime] {
+        return [
+            TrainTime(hour: 10, minute: 0),
+            TrainTime(hour: 11, minute: 0),
+        ]
+    }
+    
+    func appendTime() {
+        print("Mock appendTime")
+    }
+    
+    func isDefaultSchedule() -> Bool {
+        return true
+    }
+    
+    func removeTime(time: TrainTime) {
+        print("Mock removeTime: \(time)")
+    }
+    
+    func resetSchedule() {
+        print("Mock resetSchedule")
+    }
+    
+    func saveToken() {
+        print("Mock saveToken")
+    }
+    
+    func toggleLaunchAtLogin(_ enabled: Bool) {
+        print("Mock toggleLaunchAtLogin: \(enabled)")
     }
 }

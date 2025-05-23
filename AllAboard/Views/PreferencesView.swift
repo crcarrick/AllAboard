@@ -7,20 +7,12 @@
 
 import SwiftUI
 
-struct PreferencesView: View {
+struct PreferencesView<VM: PreferencesViewModelProtocol>: View {
     @AppStorage("launchAtLogin") private var launchAtLogin: Bool = false
     
-    @StateObject private var vm: PreferencesViewModel
-    @StateObject private var store: TrainScheduleStore
+    @ObservedObject var vm: VM
     
     @State private var showResetConfirmation: Bool = false
-    
-    init() {
-        let store = TrainScheduleStore()
-        
-        _vm = .init(wrappedValue: PreferencesViewModel(store: store))
-        _store = .init(wrappedValue: store)
-    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -62,7 +54,7 @@ struct PreferencesView: View {
                     Text("Schedule")
                         .font(.headline)
                     
-                    if !store.isDefaultSchedule() {
+                    if !vm.isDefaultSchedule() {
                         Spacer()
                         
                         Button("Reset") {
@@ -156,6 +148,12 @@ struct PreferencesView: View {
     }
 }
 
+extension PreferencesView where VM == PreferencesViewModel {
+    init() {
+        self.init(vm: PreferencesViewModel())
+    }
+}
+
 #Preview {
-  PreferencesView()
+    PreferencesView(vm: MockPreferencesViewModel())
 }
