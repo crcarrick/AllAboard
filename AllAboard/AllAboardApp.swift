@@ -13,6 +13,8 @@ import UserNotifications
 struct AllAboardApp: App {
     @Environment(\.openSettings) private var openSettings
     
+    private let notificationPermissionManager = NotificationPermissionManager()
+    
     var body: some Scene {
         MenuBarExtra("Deploy Train", systemImage: "train.side.front.car") {
             MenuContentView()
@@ -26,5 +28,6 @@ struct AllAboardApp: App {
     init() {
         ScheduleService.shared.start()
         NotificationDelegate.shared.register()
+        notificationPermissionManager.check()
     }
 }

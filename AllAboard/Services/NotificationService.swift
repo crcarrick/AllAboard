@@ -15,7 +15,7 @@ class NotificationService {
         let ghUser = await GithubService.shared.me()
         
         do {
-            let granted = try await center.requestAuthorization(options: [.alert, .sound])
+            let granted = try await center.requestAuthorization(options: [.badge, .alert, .sound])
             
             if granted {
                 let content = UNMutableNotificationContent()
@@ -41,7 +41,7 @@ class NotificationService {
         let center = UNUserNotificationCenter.current()
         
         do {
-            let granted = try await center.requestAuthorization(options: [.alert, .sound])
+            let granted = try await center.requestAuthorization(options: [.badge, .alert, .sound])
             
             if granted {
                 let content = UNMutableNotificationContent()
