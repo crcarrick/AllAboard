@@ -19,11 +19,13 @@ struct NotificationPromptView: View {
                 .frame(width: 64, height: 64)
                 .shadow(radius: 4)
             
-            Text("Stay on Track?")
+            Text("Allow notifications?")
                 .font(.title2)
                 .bold()
             
-            Text("All Aboard can send notifications to remind you to show your ticket before a Deploy Train runs.")
+            Text("All Aboard needs permission to send notifications to remind you to show your ticket.")
+                .multilineTextAlignment(.center)
+                .lineLimit(nil)
             
             HStack {
                 Button("Accept", action: { action(true) })
