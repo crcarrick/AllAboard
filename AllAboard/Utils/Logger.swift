@@ -33,6 +33,9 @@ struct LogCategory {
     func error(_ message: String, file: String = #file, line: Int = #line) {
         log(message, level: .error, file: file, line: line)
     }
+    func notice(_ message: String, file: String = #file, line: Int = #line) {
+        log(message, level: .notice, file: file, line: line)
+    }
     func warning(_ message: String, file: String = #file, line: Int = #line) {
         log(message, level: .warning, file: file, line: line)
     }
